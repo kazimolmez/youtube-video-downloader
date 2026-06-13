@@ -1,0 +1,8 @@
+# Çalışma zamanı bağımlılıkları
+# Kurulum:  python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+
+yt-dlp>=2026.6.9      # YouTube indirme motoru (sık güncellenir; engellere karşı güncel tutun)
+PySide6>=6.6          # Qt tabanlı masaüstü arayüz
+
+# Ayrıca sistemde 'ffmpeg' kurulu olmalıdır (format dönüştürme/birleştirme için).
+#   Ubuntu/Debian:  sudo apt install ffmpeg

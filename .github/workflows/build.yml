@@ -1,0 +1,49 @@
+name: Paketle (.deb + .exe)
+
+# Etiket (v*) gönderildiğinde veya elle tetiklendiğinde her iki paketi de üretir.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  linux-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Sistem bağımlılıkları
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev ffmpeg
+      - name: .deb derle
+        run: bash packaging/build_linux.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: youtube-downloader-deb
+          path: dist/*.deb
+
+  windows-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: ffmpeg ikililerini indir ve göm
+        shell: pwsh
+        run: |
+          $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+          Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
+          Expand-Archive ffmpeg.zip -DestinationPath ffmpeg_extract
+          New-Item -ItemType Directory -Force -Path packaging/vendor/ffmpeg | Out-Null
+          Get-ChildItem -Recurse ffmpeg_extract -Include ffmpeg.exe,ffprobe.exe |
+            ForEach-Object { Copy-Item $_.FullName packaging/vendor/ffmpeg/ }
+      - name: Bağımlılıklar
+        run: python -m pip install -r requirements.txt pyinstaller
+      - name: .exe derle
+        run: pyinstaller packaging/youtube-downloader.spec --noconfirm --clean
+      - uses: actions/upload-artifact@v4
+        with:
+          name: youtube-downloader-exe
+          path: dist/youtube-downloader.exe

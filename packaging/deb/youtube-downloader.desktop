@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=YouTube İndirici
+Comment=TV ve araç ekranı uyumlu YouTube video/mp3 indirici
+Exec=youtube-downloader
+Icon=youtube-downloader
+Terminal=false
+Categories=AudioVideo;Network;Utility;
+Keywords=youtube;indir;download;mp3;video;

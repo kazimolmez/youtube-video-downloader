@@ -1,0 +1,5 @@
+# Geliştirme / paketleme bağımlılıkları
+-r requirements.txt
+
+pyinstaller>=6.0   # .exe / Linux ikili derlemesi
+pytest>=8.0        # testler (opsiyonel; testler pytest'siz de çalışır)
