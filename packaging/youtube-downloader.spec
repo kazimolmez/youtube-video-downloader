@@ -30,13 +30,17 @@ for pkg in ("yt_dlp", "yt_dlp_ejs"):
     binaries += pkg_binaries
     hiddenimports += pkg_hidden
 
-# Opsiyonel: ffmpeg ikililerini goml (ozellikle Windows .exe icin).
-vendor_ffmpeg = os.path.join(PROJECT_ROOT, "packaging", "vendor", "ffmpeg")
-if os.path.isdir(vendor_ffmpeg):
-    for name in os.listdir(vendor_ffmpeg):
-        full = os.path.join(vendor_ffmpeg, name)
-        if os.path.isfile(full):
-            binaries.append((full, "."))
+# Opsiyonel: packaging/vendor/ altindaki tum ikilileri goml (ozellikle Windows .exe icin).
+#   vendor/ffmpeg/ -> ffmpeg.exe, ffprobe.exe
+#   vendor/js/     -> deno.exe (YouTube JS challenge cozumu; yoksa formatlar eksik gelir)
+# Hepsi frozen uygulamanin kok klasorune (".") acilir; resources.py oradan bulur.
+vendor_root = os.path.join(PROJECT_ROOT, "packaging", "vendor")
+if os.path.isdir(vendor_root):
+    for dirpath, _dirs, files in os.walk(vendor_root):
+        for name in files:
+            full = os.path.join(dirpath, name)
+            if os.path.isfile(full):
+                binaries.append((full, "."))
 
 # Opsiyonel ikon (Windows .ico).
 icon_ico = os.path.join(PROJECT_ROOT, "packaging", "assets", "icon.ico")
