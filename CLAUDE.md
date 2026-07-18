@@ -81,13 +81,23 @@ QThread and has **two phases**, talking to the UI only via Qt signals:
 
 ### JS runtime (signature/challenge solving)
 
-`resources.available_js_runtimes()` probes PATH for `deno`/`node`/`bun`/`qjs` and returns a
-dict shaped for yt-dlp's `js_runtimes` option (`{name: {"path": bin}}`). `downloader._js_runtime_opts()`
-injects it into both `_base_opts()` (download) and `expand_entries()` (resolve). If none is
-found the key is omitted (don't pass an empty/`None` config — yt-dlp's Python API needs
-`{name: {}}` at minimum, and a runtime binary must actually exist). `main_window._start_downloads`
-warns the user when no runtime is found. The solver scripts come from the `yt-dlp-ejs`
-package, so `remote_components` (runtime GitHub fetch) is intentionally NOT used.
+`resources.available_js_runtimes()` looks for `deno`/`node`/`bun`/`qjs` — first a
+**bundled** binary next to the frozen app (`_bundled_runtime_path`, like `bundled_ffmpeg_location`),
+then PATH — and returns a dict shaped for yt-dlp's `js_runtimes` option (`{name: {"path": bin}}`).
+`downloader._js_runtime_opts()` injects it into both `_base_opts()` (download) and
+`expand_entries()` (resolve). If none is found the key is omitted (don't pass an empty/`None`
+config — yt-dlp's Python API needs `{name: {}}` at minimum, and a runtime binary must actually
+exist). `main_window._start_downloads` warns the user when no runtime is found. The solver
+scripts come from the `yt-dlp-ejs` package, so `remote_components` (runtime GitHub fetch) is
+intentionally NOT used.
+
+**Per-platform runtime provisioning** (all three must line up or packaged builds regress to
+"format not available"):
+- **Source runs** — a system `deno`/`node` on PATH (README tells users to install Deno).
+- **Linux `.deb`** — `build_linux.sh` declares `Recommends: nodejs`.
+- **Windows `.exe`** — no system runtime is assumed, so `deno.exe` is **bundled** into the
+  exe. CI (`windows-exe` job) downloads it to `packaging/vendor/js/`; the spec bundles
+  everything under `packaging/vendor/**` (ffmpeg + js) to the frozen root.
 
 ### Cookies / anti-bot
 
