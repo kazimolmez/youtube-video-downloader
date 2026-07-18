@@ -18,8 +18,20 @@ from typing import Callable
 
 import yt_dlp
 
-from ..resources import bundled_ffmpeg_location
+from ..resources import available_js_runtimes, bundled_ffmpeg_location
 from .models import DownloadJob, JobStatus, MediaFormat
+
+
+def _js_runtime_opts() -> dict:
+    """YouTube imza/challenge cozumu icin JS ortami secenekleri.
+
+    YouTube artik formatlari cozmek icin bir JS calisma ortami (deno/node) ister;
+    yoksa cogu format eksik gelir ("Requested format is not available"). Sistemde
+    bir ortam bulunursa yt-dlp'ye bildirilir; cozucu betikler 'yt-dlp-ejs' paketinden
+    yerel olarak gelir (calisma aninda agdan indirmeye gerek kalmaz).
+    """
+    runtimes = available_js_runtimes()
+    return {"js_runtimes": runtimes} if runtimes else {}
 
 # Ilerleme bildirimi icin geri cagrim imzasi: (yuzde, durum).
 ProgressCallback = Callable[[float, JobStatus], None]
@@ -108,6 +120,8 @@ class Downloader:
             "noprogress": True,
             "consoletitle": False,
             "progress_hooks": [progress_hook],
+            # YouTube imza/challenge cozumu icin JS ortami (deno/node) bildir.
+            **_js_runtime_opts(),
         }
         if self.cookies_from_browser:
             # Bot/yas dogrulamasi ("Sign in to confirm...") engellerini asmaya yardimci olur.
@@ -185,6 +199,8 @@ class Downloader:
             "extract_flat": "in_playlist",  # Liste ogelerini tek tek acmadan listele.
             "skip_download": True,
             "ignoreerrors": True,  # Listedeki silinmis/ozel videolar tum isi bozmasin.
+            # Cozumleme de JS ortami isteyebilir (tekil video meta verisi vb.).
+            **_js_runtime_opts(),
         }
         if self.cookies_from_browser:
             opts["cookiesfrombrowser"] = (self.cookies_from_browser,)
