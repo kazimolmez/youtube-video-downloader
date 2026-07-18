@@ -119,7 +119,9 @@ packaging/                # .deb ve .exe paketleme
 ├── build_windows.bat         # .exe üretir
 ├── deb/                      # .desktop tanımı
 └── assets/icon.svg
-.github/workflows/build.yml   # CI: .deb (Ubuntu) + .exe (Windows) otomatik
+.github/workflows/
+├── build-linux.yml           # CI: .deb (Ubuntu) — bağımsız
+└── build-windows.yml         # CI: .exe (Windows, QuickJS + ffmpeg gömülü) — bağımsız
 tests/
 └── test_core.py          # Çekirdek mantık testleri (ayrıştırma + format + liste çözümleme)
 ```
@@ -167,9 +169,12 @@ packaging\build_windows.bat
 ### Otomatik (GitHub Actions)
 
 Bu Linux makinesinde Windows `.exe` üretilemez. En pratik yol CI'dır:
-bir `v*` etiketi gönderdiğinizde [.github/workflows/build.yml](.github/workflows/build.yml)
-**hem `.deb` hem `.exe`** üretir (Windows için ffmpeg'i otomatik indirip gömer) ve
-artefakt olarak yükler.
+bir `v*` etiketi gönderdiğinizde iki **bağımsız** workflow —
+[build-linux.yml](.github/workflows/build-linux.yml) (`.deb`) ve
+[build-windows.yml](.github/workflows/build-windows.yml) (`.exe`) — paralel çalışır
+(Windows için ffmpeg ve QuickJS'i otomatik indirip gömer) ve artefakt olarak yükler.
+Her iki workflow elle de tetiklenebilir (Actions sekmesi → Run workflow); biri
+başarısız olsa da diğeri paketini üretir.
 
 ```bash
 git tag v1.0.0 && git push origin v1.0.0
