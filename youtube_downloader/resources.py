@@ -61,16 +61,34 @@ _JS_RUNTIMES: tuple[tuple[str, str], ...] = (
 )
 
 
+def _bundled_runtime_path(binary: str) -> str | None:
+    """Paketlenmis (frozen) surumde uygulama yaninda gomulu bir JS ikilisi arar.
+
+    Windows .exe'sine (ffmpeg gibi) bir JS ortami gomuldugunde, sistemde deno/node
+    kurulu olmasa bile calissin diye. Kaynaktan calisirken None doner (sistem PATH'i
+    kullanilir).
+    """
+    if not getattr(sys, "frozen", False):
+        return None
+    for base in _frozen_base_dirs():
+        for name in (f"{binary}.exe", binary):
+            candidate = os.path.join(base, name)
+            if os.path.isfile(candidate):
+                return candidate
+    return None
+
+
 def available_js_runtimes() -> dict[str, dict]:
     """Sistemde bulunan JS calisma ortamlarini yt-dlp icin hazir sekilde dondurur.
 
+    Once uygulamayla gomulu ikili (frozen surum), yoksa sistemdeki PATH aranir.
     Donen sozluk dogrudan yt-dlp'nin 'js_runtimes' secenegine verilir:
     {ad: {"path": <ikili>}}. Bos sozluk hicbir ortam bulunamadigi anlamina gelir
     (bu durumda YouTube formatlari eksik gelebilir; kullaniciya Deno/Node onerilir).
     """
     runtimes: dict[str, dict] = {}
     for key, binary in _JS_RUNTIMES:
-        path = shutil.which(binary)
+        path = _bundled_runtime_path(binary) or shutil.which(binary)
         if path:
             runtimes[key] = {"path": path}
     return runtimes
