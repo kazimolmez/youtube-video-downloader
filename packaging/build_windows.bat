@@ -10,6 +10,12 @@ REM Notlar:
 REM   * ffmpeg.exe ve ffprobe.exe dosyalarini packaging\vendor\ffmpeg\ icine
 REM     koyarsaniz .exe icine gomulur (kullanici ayrica ffmpeg kurmak zorunda kalmaz).
 REM     ffmpeg'i https://www.gyan.dev/ffmpeg/builds/ adresinden indirebilirsiniz.
+REM   * qjs.exe (QuickJS) dosyasini packaging\vendor\js\ icine koyarsaniz .exe icine
+REM     gomulur. YouTube imza/challenge cozumu icin bir JS ortami SARTTIR; yoksa
+REM     formatlar eksik gelir ("Requested format is not available"). QuickJS kucuk
+REM     tek dosyadir (~2 MB), onefile'a sorunsuz gomulur:
+REM     https://github.com/quickjs-ng/quickjs/releases (qjs-windows-x86_64.exe)
+REM     Indirdikten sonra 'qjs.exe' adiyla kaydedin (resources.py bu adla arar).
 REM   * Windows .exe yalnizca Windows'ta derlenebilir (capraz derleme yok).
 
 setlocal
