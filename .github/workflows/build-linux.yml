@@ -1,0 +1,25 @@
+name: Paketle Linux (.deb)
+
+# Etiket (v*) gönderildiğinde veya elle tetiklendiğinde .deb paketini üretir.
+# Windows derlemesinden bağımsızdır (ayrı workflow) — biri başarısız olsa da diğeri üretir.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  linux-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Sistem bağımlılıkları
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev ffmpeg
+      - name: .deb derle
+        run: bash packaging/build_linux.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: youtube-downloader-deb
+          path: dist/*.deb
