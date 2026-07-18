@@ -2,7 +2,12 @@
 # Kurulum:  python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 
 yt-dlp>=2026.6.9      # YouTube indirme motoru (sık güncellenir; engellere karşı güncel tutun)
+yt-dlp-ejs>=0.8       # YouTube JS challenge çözücü betikler (imza/n çözümü; formatlar eksik gelmesin)
 PySide6>=6.6          # Qt tabanlı masaüstü arayüz
 
 # Ayrıca sistemde 'ffmpeg' kurulu olmalıdır (format dönüştürme/birleştirme için).
 #   Ubuntu/Debian:  sudo apt install ffmpeg
+#
+# VE bir JavaScript çalışma ortamı gereklidir (YouTube imza/challenge çözümü için).
+# En kolayı Deno:  curl -fsSL https://deno.land/install.sh | sh
+# (Node.js kuruluysa o da otomatik kullanılır.)
