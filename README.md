@@ -194,10 +194,13 @@ git tag v1.0.0 && git push origin v1.0.0
   giriş yaptığınız hesapla erişebiliyorsanız, *Ayarlar → Tarayıcı çerezleri*'nden o
   tarayıcıyı seçin; uygulama oturum çerezlerinizle listeyi açar. (Genel/herkese açık
   listeler çerez gerektirmez.)
-- **"No supported JavaScript runtime" uyarısı / bazı formatların eksik gelmesi** →
-  YouTube imza çözümü için artık bir JS çalışma ortamı önerilir. Güvenilirliği
-  artırmak için **Deno** kurun: `curl -fsSL https://deno.land/install.sh | sh`
-  (yt-dlp otomatik bulur).
+- **"Requested format is not available" / "No supported JavaScript runtime" /
+  bazı formatların eksik gelmesi** → YouTube artık imza/challenge çözümü için bir
+  **JavaScript çalışma ortamı** ister; olmadan formatlar (MP3 için gereken m4a ses
+  dahil) eksik gelir. Çözüm: **Deno** kurun —
+  `curl -fsSL https://deno.land/install.sh | sh` (Node.js kuruluysa o da kullanılır;
+  uygulama ikisini de otomatik bulur). Çözücü betikler `yt-dlp-ejs` paketiyle gelir
+  (`requirements.txt` içinde), böylece çalışma anında ağdan bir şey indirilmez.
 - **yt-dlp eskidi / indirme bozuldu** → YouTube sık değişir; güncel tutun:
   ```bash
   .venv/bin/pip install -U yt-dlp
