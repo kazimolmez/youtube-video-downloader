@@ -39,6 +39,16 @@ jobs:
           New-Item -ItemType Directory -Force -Path packaging/vendor/ffmpeg | Out-Null
           Get-ChildItem -Recurse ffmpeg_extract -Include ffmpeg.exe,ffprobe.exe |
             ForEach-Object { Copy-Item $_.FullName packaging/vendor/ffmpeg/ }
+      - name: Deno (JS runtime) indir ve göm
+        shell: pwsh
+        run: |
+          # YouTube imza/challenge çözümü için gerekli; olmadan formatlar eksik gelir.
+          $url = "https://github.com/denoland/deno/releases/latest/download/deno-x86_64-pc-windows-msvc.zip"
+          Invoke-WebRequest -Uri $url -OutFile deno.zip
+          Expand-Archive deno.zip -DestinationPath deno_extract
+          New-Item -ItemType Directory -Force -Path packaging/vendor/js | Out-Null
+          Get-ChildItem -Recurse deno_extract -Include deno.exe |
+            ForEach-Object { Copy-Item $_.FullName packaging/vendor/js/ }
       - name: Bağımlılıklar
         run: python -m pip install -r requirements.txt pyinstaller
       - name: .exe derle
