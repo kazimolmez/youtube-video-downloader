@@ -47,3 +47,30 @@ def bundled_ffmpeg_location() -> str | None:
 def system_ffmpeg_available() -> bool:
     """Sistemde (PATH) ffmpeg var mi? Kullaniciya erken uyari icin."""
     return shutil.which("ffmpeg") is not None or bundled_ffmpeg_location() is not None
+
+
+# yt-dlp'nin desteklegi JS calisma ortamlari -> (yt-dlp anahtari, calistirilabilir adi).
+# Oncelik sirasi yt-dlp ile ayni (en yuksek once). YouTube artik imza/n cozumu icin
+# bir JS ortami ISTER; yoksa bircok format (MP3 icin gereken m4a ses dahil) eksik gelir
+# -> "Requested format is not available". Cozucu betikler 'yt-dlp-ejs' paketinden gelir.
+_JS_RUNTIMES: tuple[tuple[str, str], ...] = (
+    ("deno", "deno"),
+    ("node", "node"),
+    ("bun", "bun"),
+    ("quickjs", "qjs"),
+)
+
+
+def available_js_runtimes() -> dict[str, dict]:
+    """Sistemde bulunan JS calisma ortamlarini yt-dlp icin hazir sekilde dondurur.
+
+    Donen sozluk dogrudan yt-dlp'nin 'js_runtimes' secenegine verilir:
+    {ad: {"path": <ikili>}}. Bos sozluk hicbir ortam bulunamadigi anlamina gelir
+    (bu durumda YouTube formatlari eksik gelebilir; kullaniciya Deno/Node onerilir).
+    """
+    runtimes: dict[str, dict] = {}
+    for key, binary in _JS_RUNTIMES:
+        path = shutil.which(binary)
+        if path:
+            runtimes[key] = {"path": path}
+    return runtimes
