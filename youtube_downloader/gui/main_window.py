@@ -37,6 +37,7 @@ from .. import __app_name__, __version__
 from ..core.downloader import Downloader
 from ..core.models import DownloadJob, JobStatus, MediaFormat
 from ..core.parser import parse_input
+from ..resources import available_js_runtimes
 from .theme import apply_theme
 from .worker import DownloadWorker
 
@@ -322,6 +323,24 @@ class MainWindow(QWidget):
                 self, "İndirilecek bir şey yok", "Geçerli en az bir bağlantı girin."
             )
             return
+
+        # YouTube artik format cozumu icin bir JS calisma ortami ister; yoksa
+        # formatlar eksik gelir ("Requested format is not available").
+        if not available_js_runtimes():
+            proceed = QMessageBox.warning(
+                self,
+                "JavaScript çalışma ortamı bulunamadı",
+                "Sistemde Deno/Node bulunamadı. YouTube, formatları çözmek için bir "
+                "JavaScript çalışma ortamı ister; olmadan indirme büyük olasılıkla "
+                "“Requested format is not available” hatası verir.\n\n"
+                "Önerilen çözüm — Deno kurun:\n"
+                "    curl -fsSL https://deno.land/install.sh | sh\n\n"
+                "Yine de denemek istiyor musunuz?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if proceed != QMessageBox.Yes:
+                return
 
         output_dir = self.output_edit.text().strip() or self._default_output_dir()
         downloader = Downloader(
