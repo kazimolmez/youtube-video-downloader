@@ -23,7 +23,8 @@ binaries = []
 hiddenimports = []
 
 # yt-dlp eksiksiz toplansin (extractor'lar dinamik yuklendigi icin sart).
-for pkg in ("yt_dlp",):
+# yt_dlp_ejs: YouTube JS challenge cozucu .min.js dosyalari (veri olarak toplanmali).
+for pkg in ("yt_dlp", "yt_dlp_ejs"):
     pkg_datas, pkg_binaries, pkg_hidden = collect_all(pkg)
     datas += pkg_datas
     binaries += pkg_binaries
