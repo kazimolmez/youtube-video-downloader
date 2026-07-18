@@ -109,6 +109,24 @@ def test_cookies_option_set_when_browser_given():
     assert "cookiesfrombrowser" not in dl_off._base_opts(progress_hook=lambda d: None)
 
 
+def test_js_runtime_opts_injected_when_runtime_available(monkeypatch=None):
+    # available_js_runtimes'i taklit et: bir ortam varmis gibi davran.
+    import youtube_downloader.core.downloader as dl_mod
+
+    original = dl_mod.available_js_runtimes
+    dl_mod.available_js_runtimes = lambda: {"node": {"path": "/usr/bin/node"}}
+    try:
+        dl = Downloader(output_dir="/tmp")
+        opts = dl._base_opts(progress_hook=lambda d: None)
+        assert opts["js_runtimes"] == {"node": {"path": "/usr/bin/node"}}
+        # Ortam yoksa anahtar hic eklenmemeli (yt-dlp varsayilanini bozmasin).
+        dl_mod.available_js_runtimes = lambda: {}
+        opts_off = dl._base_opts(progress_hook=lambda d: None)
+        assert "js_runtimes" not in opts_off
+    finally:
+        dl_mod.available_js_runtimes = original
+
+
 def test_entries_from_single_video_info():
     info = {"id": "abc123", "title": "Tek Video"}  # 'entries' yok -> tekil
     entries = Downloader._entries_from_info(info)
