@@ -56,6 +56,7 @@ Section: utils
 Priority: optional
 Architecture: ${ARCH}
 Depends: ffmpeg
+Recommends: nodejs
 Installed-Size: ${INSTALLED_KB}
 Maintainer: YouTube İndirici <noreply@example.com>
 Description: TV ve araç ekranı uyumlu YouTube video/mp3 indirici
