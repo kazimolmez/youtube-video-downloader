@@ -31,8 +31,9 @@ packaging\build_windows.bat                 # Build .exe (Windows host only — 
   one to solve signature/`n` challenges; without it many formats are missing and downloads
   fail with `Requested format is not available`. The `yt-dlp-ejs` pip dependency supplies
   the solver scripts locally (no runtime network fetch). See "JS runtime" below.
-- CI ([.github/workflows/build.yml](.github/workflows/build.yml)) builds both `.deb` and
-  `.exe` on a `v*` tag push (e.g. `git tag v1.0.0 && git push origin v1.0.0`).
+- CI builds `.deb` ([build-linux.yml](.github/workflows/build-linux.yml)) and `.exe`
+  ([build-windows.yml](.github/workflows/build-windows.yml)) as two independent workflows on
+  a `v*` tag push (e.g. `git tag v1.0.0 && git push origin v1.0.0`) or via manual dispatch.
 - Bump the version in [youtube_downloader/__init__.py](youtube_downloader/__init__.py)
   (`__version__`) — the `.deb` build reads it from there.
 
@@ -95,9 +96,14 @@ intentionally NOT used.
 "format not available"):
 - **Source runs** — a system `deno`/`node` on PATH (README tells users to install Deno).
 - **Linux `.deb`** — `build_linux.sh` declares `Recommends: nodejs`.
-- **Windows `.exe`** — no system runtime is assumed, so `deno.exe` is **bundled** into the
-  exe. CI (`windows-exe` job) downloads it to `packaging/vendor/js/`; the spec bundles
-  everything under `packaging/vendor/**` (ffmpeg + js) to the frozen root.
+- **Windows `.exe`** — no system runtime is assumed, so **QuickJS** (`qjs.exe`, ~2 MB) is
+  **bundled** into the exe. CI (`build-windows.yml`) downloads it to `packaging/vendor/js/`;
+  the spec bundles everything under `packaging/vendor/**` (ffmpeg + js) to the frozen root.
+  Deno was tried first but its ~130 MB binary broke PyInstaller onefile extraction at runtime
+  ("Failed to extract deno.exe"), so QuickJS — tiny and yt-dlp-supported — is used instead.
+
+CI is split into two independent workflows (`build-linux.yml`, `build-windows.yml`), both
+triggered on `v*` tags and `workflow_dispatch`, so one platform failing doesn't block the other.
 
 ### Cookies / anti-bot
 
