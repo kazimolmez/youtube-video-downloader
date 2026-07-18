@@ -32,7 +32,8 @@ for pkg in ("yt_dlp", "yt_dlp_ejs"):
 
 # Opsiyonel: packaging/vendor/ altindaki tum ikilileri goml (ozellikle Windows .exe icin).
 #   vendor/ffmpeg/ -> ffmpeg.exe, ffprobe.exe
-#   vendor/js/     -> deno.exe (YouTube JS challenge cozumu; yoksa formatlar eksik gelir)
+#   vendor/js/     -> qjs.exe (QuickJS; YouTube JS challenge cozumu, yoksa formatlar eksik gelir.
+#                    Kucuk tek dosya oldugu icin onefile'a sorunsuz gomulur — deno cok buyuktu.)
 # Hepsi frozen uygulamanin kok klasorune (".") acilir; resources.py oradan bulur.
 vendor_root = os.path.join(PROJECT_ROOT, "packaging", "vendor")
 if os.path.isdir(vendor_root):
