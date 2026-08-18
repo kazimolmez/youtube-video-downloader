@@ -5,6 +5,23 @@ yt-dlp>=2026.6.9      # YouTube indirme motoru (sık güncellenir; engellere kar
 yt-dlp-ejs>=0.8       # YouTube JS challenge çözücü betikler (imza/n çözümü; formatlar eksik gelmesin)
 PySide6>=6.6          # Qt tabanlı masaüstü arayüz
 
+# --- yt-dlp'nin opsiyonel bağımlılıkları ---------------------------------------
+# yt-dlp bunları try/except ile içe aktarır: kurulu değilse ilgili yeteneği
+# SESSİZCE kapatır (veya çalışma anında hata mesajı basar). Kaynaktan çalışırken
+# sistemde bulunabilirler, ancak PyInstaller ile paketlenmiş sürüm yalnızca kendi
+# gömülü Python'ını kullanır — bu yüzden burada AÇIKÇA listelenmeleri şarttır.
+# Aksi hâlde paket başka bir bilgisayarda "modül kurulu değil" hatası verir.
+secretstorage>=3.3; sys_platform == "linux"   # Chrome/Edge/Brave çerez anahtarı (D-Bus Secret Service)
+jeepney>=0.7; sys_platform == "linux"         # secretstorage'ın D-Bus katmanı
+cryptography>=42      # çerez şifre çözümü (Chrome v10/v11 AES-GCM)
+certifi               # SSL kök sertifikaları (paketlenmiş sürüm sistemden bağımsız olmalı)
+brotli                # HTTP brotli açma (YouTube brotli ile yanıt verir)
+requests>=2.32        # yt-dlp'nin tercih ettiği HTTP arka ucu
+urllib3>=2            # requests bağımlılığı
+websockets>=13        # canlı yayın extractor'ları
+mutagen               # MP3 ID3 etiketi + kapak görseli gömme
+pycryptodomex         # HLS AES-128 çözümü
+
 # Ayrıca sistemde 'ffmpeg' kurulu olmalıdır (format dönüştürme/birleştirme için).
 #   Ubuntu/Debian:  sudo apt install ffmpeg
 #
